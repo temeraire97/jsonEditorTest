@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>JSONEditor | New window</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.css" rel="stylesheet"
+        type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.js"></script>
+
+    <style type="text/css">
+        #jsoneditor {
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>
+        <button id="openNewEditor">Open Editor in New Window</button>
+        <button id="setJSON">Set JSON</button>
+        <button id="getJSON">Get JSON</button>
+    </p>
+
+    <script>
+        let editor
+
+        function openNewEditor() {
+            const child = window.open("", "_blank", "width=600, height=700")
+            child.document.title = 'JSONEditor | New window'
+            child.onunload = function () {
+                editor = undefined
+            }
+
+            // make the necessary styles available within the child window
+            // for JSONEditor
+            // const baseUrl = window.location.href.slice(0, window.location.href.lastIndexOf('/'))
+            const jsonEditorStyles = child.document.createElement("link")
+            jsonEditorStyles.setAttribute("href", "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.css")
+            jsonEditorStyles.setAttribute("rel", "stylesheet")
+            child.document.head.append(jsonEditorStyles)
+
+            // for vanilla-picker
+            const colorPickerStyles = JSONEditor.VanillaPicker.StyleElement.cloneNode(true)
+            child.document.head.append(colorPickerStyles)
+
+            const container = child.document.createElement("div")
+            container.setAttribute("style", "width: 100%; height: 90%;")
+            child.document.body.append(container)
+
+            const saveBtn = child.document.createElement("input")
+            saveBtn.setAttribute("type", "button")
+            saveBtn.setAttribute("id", "save")
+            saveBtn.setAttribute("value", "SAVE")
+            child.document.body.append(saveBtn)
+
+            // const saveId = child.document.getElementById('save')
+            // saveId.value = "SAVE";
+
+            // create the editor
+            const options = {
+                // Show sort and transform modals in the child window, not the parent.      
+                mode: 'view',
+                modes: ['text', 'tree', 'view'], // allowed modes
+                onError: function (err) {
+                    alert(err.toString())
+                },
+                onModeChange: function (newMode, oldMode) {
+                    console.log('Mode switched from', oldMode, 'to', newMode)
+                },
+                modalAnchor: child.document.body
+            }
+            editor = new JSONEditor(container, options)
+        }
+
+        // create a new window
+        document.getElementById('openNewEditor').onclick = openNewEditor
+
+        // set json
+        document.getElementById('setJSON').onclick = function () {
+            if (!editor) {
+                openNewEditor()
+            }
+            const json = {
+                "array": [1, 2, 3],
+                "boolean": true,
+                "color": "#82b92c",
+                "null": null,
+                "number": 123,
+                "object": { "a": "b", "c": "d" },
+                "time": 1575599819000,
+                "string": "Hello World"
+            }
+            editor.set(json)
+        }
+
+        // get json
+        document.getElementById('getJSON').onclick = function () {
+            if (!editor) {
+                alert('No editor is open')
+            } else {
+                const json = editor.get()
+                alert(JSON.stringify(json, null, 2))
+            }
+        }
+    </script>
+</body>
+
+</html>

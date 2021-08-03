@@ -1,0 +1,2 @@
+{"Array": [1, 2, 3],"Boolean": true,"Null": null,"Number": 123,"Object": {"a": "b", "c": "d"},"String": "Hello World"}
+// data = '[{"data1":"a","data2":"b"},{"data1":"a1","data2":"b2"}]'
